@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz - 2ª Fase</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #a18cd1, #fbc2eb);
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .quiz-container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+    }
+    h1 {
+      color: #6a1b9a;
+    }
+    .question {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .options {
+      margin-top: 20px;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      background-color: #e1bee7;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #ce93d8;
+    }
+    .control-buttons {
+      margin-top: 20px;
+    }
+    .control-buttons button {
+      margin: 5px;
+      padding: 10px 25px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .next-btn {
+      background-color: #6a1b9a;
+      color: white;
+    }
+    .next-btn:hover {
+      background-color: #4a148c;
+    }
+    .back-btn {
+      background-color: #ccc;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Quiz de Matemática - 2ª Fase 🧠</h1>
+    <div id="question-container"></div>
+    <div class="options" id="options-container"></div>
+    <div class="control-buttons">
+      <button class="back-btn" onclick="previousQuestion()">Voltar</button>
+      <button class="next-btn" onclick="nextQuestion()">Próxima</button>
+    </div>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const questions = [
+      { q: "O resultado de (x + 7)² é:", o: ["x² + 14x + 49", "x² + 7x + 49", "x² + 49", "x² + 7x"], a: "x² + 14x + 49" },
+      { q: "O produto (3x - 2)² é:", o: ["9x² - 12x + 4", "6x² - 12x + 4", "9x² - 6x + 4", "9x² - 4x + 4"], a: "9x² - 12x + 4" },
+      { q: "Quanto vale (x + 5)(x - 5)?", o: ["x² + 25", "x² - 25", "x² + 10x + 25", "x² - 10x + 25"], a: "x² - 25" },
+      { q: "O valor de (2x - 3)² é:", o: ["4x² - 9", "4x² - 12x + 9", "4x² - 6x + 9", "4x² - 12x - 9"], a: "4x² - 12x + 9" },
+      { q: "O produto (x + 2)(x + 3) é igual a:", o: ["x² + 5x + 6", "x² + 6x + 5", "x² + 5x + 3", "x² + 3x + 2"], a: "x² + 5x + 6" },
+      { q: "Quanto vale (x - 1)(x - 1)?", o: ["x² - 2x + 1", "x² - 1", "x² - x + 1", "x² + x + 1"], a: "x² - 2x + 1" },
+      { q: "(4x + 1)² é igual a:", o: ["16x² + 8x + 1", "8x² + 4x + 1", "16x² + 4x + 1", "16x² + x + 1"], a: "16x² + 8x + 1" },
+      { q: "Quanto é 3² × 3³?", o: ["9", "27", "243", "729"], a: "243" },
+      { q: "Qual é o valor de (2³)²?", o: ["64", "36", "16", "32"], a: "64" },
+      { q: "O valor de x² × x⁴ é:", o: ["x⁶", "x⁸", "x⁷", "x³"], a: "x⁶" },
+      { q: "O valor de (5²)³ é:", o: ["125", "625", "15", "15625"], a: "15625" },
+      { q: "O valor de x⁴ ÷ x² é:", o: ["x²", "x⁶", "x", "x³"], a: "x²" },
+      { q: "(x³)³ é igual a:", o: ["x⁶", "x⁹", "x⁸", "x³"], a: "x⁹" },
+      { q: "Quanto é √(144)?", o: ["12", "11", "14", "13"], a: "12" },
+      { q: "√(81x²) é igual a:", o: ["9x", "81x", "x⁹", "8x"], a: "9x" },
+      { q: "√(36y²) é igual a:", o: ["6y", "36y", "12y", "18y"], a: "6y" },
+      { q: "√(x²) é igual a:", o: ["x", "x²", "√x", "|x|"], a: "|x|" },
+      { q: "√100 + √49 é igual a:", o: ["14", "149", "10", "17"], a: "17" },
+      { q: "A raiz quadrada de 225 é:", o: ["15", "25", "20", "30"], a: "15" },
+      { q: "O valor de √(16x²) é:", o: ["4x", "8x", "16x", "x⁴"], a: "4x" },
+      { q: "Se f(x) = 5x - 3, então f(2) é igual a:", o: ["7", "10", "8", "5"], a: "7" },
+      { q: "Se f(x) = -2x + 4, o valor de f(0) é:", o: ["-2", "4", "2", "0"], a: "4" },
+      { q: "Qual o valor de x que anula a função f(x) = 3x - 9?", o: ["3", "6", "0", "9"], a: "3" },
+      { q: "A função f(x) = -x + 1 é:", o: ["Crescente", "Decrescente", "Constante", "Quadrática"], a: "Decrescente" },
+      { q: "O gráfico da função f(x) = 2x + 3 é:", o: ["Uma reta inclinada para cima", "Uma parábola", "Uma reta inclinada para baixo", "Um ponto"], a: "Uma reta inclinada para cima" },
+      { q: "Qual é o valor de f(1), sabendo que f(x) = 7 - x?", o: ["6", "8", "-6", "0"], a: "6" },
+      { q: "Qual valor de x faz f(x) = 0, sendo f(x) = x - 10?", o: ["10", "-10", "0", "1"], a: "10" },
+      { q: "Se f(x) = 4x + 1, então f(-1) é:", o: ["-3", "-5", "3", "5"], a: "-3" },
+      { q: "A função f(x) = 0x + 7 é:", o: ["Constante", "Crescente", "Decrescente", "Inexistente"], a: "Constante" },
+      { q: "Qual a raiz da função f(x) = 6x - 12?", o: ["x = 2", "x = 6", "x = -2", "x = 12"], a: "x = 2" }
+    ];
+
+    let current = 0;
+    let score = 0;
+    const answers = Array(questions.length).fill(null);
+
+    function showQuestion() {
+      let q = questions[current];
+      document.getElementById("question-container").innerHTML = `<div class='question'>${current + 1}. ${q.q}</div>`;
+      let options = document.getElementById("options-container");
+      options.innerHTML = "";
+      q.o.forEach(opt => {
+        let btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.onclick = () => {
+          answers[current] = opt;
+          document.querySelectorAll("#options-container button").forEach(b => b.disabled = false);
+          document.querySelectorAll("#options-container button").forEach(b => b.style.background = "#e1bee7");
+          btn.style.background = "#aed581";
+        };
+        if (answers[current] !== null && answers[current] === opt) {
+          btn.style.background = "#aed581";
+        }
+        options.appendChild(btn);
+      });
+    }
+
+    function nextQuestion() {
+      if (answers[current] === null) {
+        alert("Responda a pergunta antes de avançar.");
+        return;
+      }
+      current++;
+      if (current < questions.length) {
+        showQuestion();
+      } else {
+        score = answers.filter((resposta, i) => resposta === questions[i].a).length;
+        let mensagem = `Você acertou ${score} de ${questions.length} perguntas.`;
+        if (score > 20) mensagem += "<br><strong>Parabéns! Você está classificado! 🎉</strong>";
+        document.querySelector(".quiz-container").innerHTML = `<h1>Resultado Final 🏁</h1><p>${mensagem}</p>`;
+      }
+    }
+
+    function previousQuestion() {
+      if (current > 0) {
+        current--;
+        showQuestion();
+      }
+    }
+
+    showQuestion();
+  </script>
+</body>
+</html>

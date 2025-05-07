@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz de Matemática</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #a18cd1, #fbc2eb);
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .quiz-container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+    }
+    h1 {
+      color: #6a1b9a;
+    }
+    .question {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .options {
+      margin-top: 20px;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      background-color: #e1bee7;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #ce93d8;
+    }
+    .control-buttons {
+      margin-top: 20px;
+    }
+    .control-buttons button {
+      margin: 5px;
+      padding: 10px 25px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .next-btn {
+      background-color: #6a1b9a;
+      color: white;
+    }
+    .next-btn:hover {
+      background-color: #4a148c;
+    }
+    .back-btn {
+      background-color: #ccc;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Quiz de Matemática 🧠</h1>
+    <div id="question-container"></div>
+    <div class="options" id="options-container"></div>
+    <div class="control-buttons">
+      <button class="back-btn" onclick="previousQuestion()">Voltar</button>
+      <button class="next-btn" onclick="nextQuestion()">Próxima</button>
+    </div>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const questions = [
+      { q: "Qual é o valor de √49?", o: ["5", "6", "7", "8"], a: "7" },
+      { q: "Resolva: 2x + 3 = 11. Qual o valor de x?", o: ["4", "5", "6", "3"], a: "4" },
+      { q: "Qual é a fórmula da área de um triângulo?", o: ["base × altura", "(base × altura) / 2", "lado × lado", "2πr"], a: "(base × altura) / 2" },
+      { q: "Qual é o resultado de 5²?", o: ["10", "20", "25", "30"], a: "25" },
+      { q: "O que é uma equação do 2º grau?", o: ["ax + b = 0", "ax² + bx + c = 0", "x² = 2x", "x³ = 0"], a: "ax² + bx + c = 0" },
+      { q: "Qual é o resultado de (x + 3)²?", o: ["x² + 6x + 9", "x² + 9", "x² + 3x + 9", "x² + 3x"], a: "x² + 6x + 9" },
+      { q: "Qual é o resultado de (2x - 5)(2x + 5)?", o: ["4x² + 25", "4x² - 25", "4x² - 10x + 25", "2x² - 25"], a: "4x² - 25" },
+      { q: "Quanto é 2³ × 2²?", o: ["4", "8", "32", "16"], a: "32" },
+      { q: "O valor de (x²)³ é:", o: ["x⁶", "x⁵", "x⁹", "x³"], a: "x⁶" },
+      { q: "Quanto é √81?", o: ["7", "8", "9", "10"], a: "9" },
+      { q: "√(25x²) é igual a:", o: ["5x", "25x", "x²", "5x²"], a: "5x" },
+      { q: "Qual é o valor de f(3), sabendo que f(x) = 2x + 1?", o: ["6", "7", "8", "5"], a: "7" },
+      { q: "A função f(x) = -3x + 6 é crescente, decrescente ou constante?", o: ["Crescente", "Decrescente", "Constante", "Nenhuma"], a: "Decrescente" },
+      { q: "O resultado de (x - 4)² é:", o: ["x² - 8x + 16", "x² + 8x + 16", "x² - 4x + 16", "x² - 16"], a: "x² - 8x + 16" },
+      { q: "O resultado de (3x + 2)(3x - 2) é:", o: ["9x² + 4", "9x² - 6x + 4", "9x² - 4", "9x² - 12x"], a: "9x² - 4" },
+      { q: "Qual é o valor de (3²)²?", o: ["6", "81", "36", "18"], a: "81" },
+      { q: "Quanto vale x³ × x²?", o: ["x⁵", "x⁶", "x⁸", "x²"], a: "x⁵" },
+      { q: "O valor de 2⁴ é:", o: ["8", "16", "32", "4"], a: "16" },
+      { q: "Quanto vale 5⁰?", o: ["5", "1", "0", "Indeterminado"], a: "1" },
+      { q: "Qual valor de x faz f(x)=0, sendo f(x)=3x+6?", o: ["2", "-2", "-3", "-6"], a: "-2" },
+      { q: "O resultado de (x + 5)² é:", o: ["x² + 10x + 25", "x² + 5x + 25", "x² + 25", "x² + 5x"], a: "x² + 10x + 25" },
+      { q: "O produto (a - 2)² é:", o: ["a² - 2a + 4", "a² - 4a + 4", "a² - 4a", "a² - 2a + 2"], a: "a² - 4a + 4" },
+      { q: "Quanto vale (x³)²?", o: ["x⁵", "x⁶", "x⁹", "x²"], a: "x⁶" },
+      { q: "Qual é o valor de 10²?", o: ["100", "20", "1000", "10"], a: "100" },
+      { q: "Quanto vale (2x)²?", o: ["4x", "2x²", "4x²", "x²"], a: "4x²" },
+      { q: "√64 é igual a:", o: ["6", "7", "8", "9"], a: "8" },
+      { q: "√(9x²) é igual a:", o: ["3x", "9x", "x²", "3x²"], a: "3x" },
+      { q: "√121 é igual a:", o: ["10", "11", "12", "13"], a: "11" },
+      { q: "Dada a função f(x) = 2x - 4, qual o valor de f(5)?", o: ["4", "6", "8", "-2"], a: "6" },
+      { q: "Se f(x) = x - 7, qual valor de x faz f(x) = 0?", o: ["x = 7", "x = -7", "x = 0", "x = 1"], a: "x = 7" }
+    ];
+
+    let current = 0;
+    let score = 0;
+    const answers = Array(questions.length).fill(null);
+
+    function showQuestion() {
+      let q = questions[current];
+      document.getElementById("question-container").innerHTML = `<div class='question'>${current + 1}. ${q.q}</div>`;
+      let options = document.getElementById("options-container");
+      options.innerHTML = "";
+      q.o.forEach(opt => {
+        let btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.onclick = () => {
+          answers[current] = opt;
+          document.querySelectorAll("#options-container button").forEach(b => b.disabled = false);
+          document.querySelectorAll("#options-container button").forEach(b => b.style.background = "#e1bee7");
+          btn.style.background = "#aed581";
+        };
+        if (answers[current] !== null && answers[current] === opt) {
+          btn.style.background = "#aed581";
+        }
+        options.appendChild(btn);
+      });
+    }
+
+    function nextQuestion() {
+      if (answers[current] === null) {
+        alert("Responda a pergunta antes de avançar.");
+        return;
+      }
+      current++;
+      if (current < questions.length) {
+        showQuestion();
+      } else {
+        score = answers.filter((resposta, i) => resposta === questions[i].a).length;
+        let mensagem = `Você acertou ${score} de ${questions.length} perguntas.`;
+        if (score > 20) mensagem += "<br><strong>Parabéns! Excelente desempenho! 🎉</strong>";
+        document.querySelector(".quiz-container").innerHTML = `<h1>Resultado Final 🏁</h1><p>${mensagem}</p>`;
+      }
+    }
+
+    function previousQuestion() {
+      if (current > 0) {
+        current--;
+        showQuestion();
+      }
+    }
+
+    showQuestion();
+  </script>
+</body>
+</html>
